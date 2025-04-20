@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TravelController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('dashboard', function () { 
+    return view('dashboard');
+})->name('dashboard');
+
+Route::controller(TravelController::class)->prefix('travels')->group(function () {
+    Route::get('', 'index')->name('travels'); 
 });
