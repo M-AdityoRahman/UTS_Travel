@@ -1,91 +1,118 @@
-@extends('layout.app')
-@section('title', 'travels')
-@section('content')
-<h1 class="h3 mb-2 text-gray-800">Add New WishList</h1>
-
-<div class="row">
-    <div class="col-6">
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Add New WishList Travel Form</h6>
-            </div>
-            <div class="card-body">
-                <form id="travelForm" action="{{ route('travels.add.insert') }}" method="post">
-                    <script>
-                        $('#travelForm').submit(function(e) {
-                            e.preventDefault();
-                            const formData = $(this).serialize();
-                    
-                            $.ajax({
-                                url: '{{ isset($travel) ? route("travels.update", $travel->id) : route("travels.add.insert") }}',
-                                method: '{{ isset($travel) ? "PUT" : "POST" }}',
-                                data: formData,
-                                success: function(response) {
-                                    $('#travelModal').modal('hide');
-                                    location.reload();
-                                },
-                                error: function(err) {
-                                    // Optional: handle validation error
-                                    alert("Something went wrong.");
-                                }
-                            });
-                        });
-                    </script>
-                    
-                    @csrf
-                    <div class="form-group">
+<!-- Modal Tambah Data (Insert Modal) -->
+<div class="modal fade" id="insertModal" tabindex="-1" aria-labelledby="insertModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Form Tambah Data -->
+            <form id="insertForm">
+                @csrf {{-- Token CSRF untuk keamanan request POST --}}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="insertModalLabel">Add Travel</h5>
+                    <!-- Tombol close modal -->
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Input Nama Tempat -->
+                    <div class="mb-3">
                         <label>Place Name</label>
-                        <input type="text" name="place_name" class="form-control" value="{{ old('place_name') }}">
-                        @error('place_name')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
+                        <input type="text" name="place_name" class="form-control" required>
+                        <span class="text-danger" id="error-place_name"></span> {{-- Menampilkan error validasi --}}
                     </div>
-                    
-                    <div class="form-group">
+                    <!-- Input Lokasi -->
+                    <div class="mb-3">
                         <label>Location</label>
-                        <input type="text" name="location" class="form-control" value="{{ old('location') }}">
-                        @error('location')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
+                        <input type="text" name="location" class="form-control" required>
+                        <span class="text-danger" id="error-location"></span>
                     </div>
-                
-                    <div class="form-group">
+                    <!-- Pilihan Jenis Travel -->
+                    <div class="mb-3">
                         <label>Travel Type</label>
                         <select name="travel_type" class="form-control" required>
                             <option value="">-- Select Type --</option>
-                            <option value="Liburan" {{ old('travel_type') == 'Liburan' ? 'selected' : '' }}>Liburan</option>
-                            <option value="Petualangan" {{ old('travel_type') == 'Petualangan' ? 'selected' : '' }}>Petualangan</option>
-                            <option value="Wisata Budaya" {{ old('travel_type') == 'Wisata Budaya' ? 'selected' : '' }}>Wisata Budaya</option>
-                            <option value="Kuliner" {{ old('travel_type') == 'Kuliner' ? 'selected' : '' }}>Kuliner</option>
-                            <option value="Alam" {{ old('travel_type') == 'Alam' ? 'selected' : '' }}>Alam</option>
+                            <option value="Liburan">Liburan</option>
+                            <option value="Petualangan">Petualangan</option>
+                            <option value="Wisata Budaya">Wisata Budaya</option>
+                            <option value="Kuliner">Kuliner</option>
+                            <option value="Alam">Alam</option>
                         </select>
-                        @error('travel_type')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
+                        <span class="text-danger" id="error-travel_type"></span>
                     </div>
-                
-                    <div class="form-group">
-                        <label>Priority Level (1-5)</label>
-                        <input type="number" name="priority_level" class="form-control" min="1" max="5" value="{{ old('priority_level') }}">
-                        @error('priority_level')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
+                    <!-- Input Prioritas -->
+                    <div class="mb-3">
+                        <label>Priority Level</label>
+                        <input type="number" name="priority_level" class="form-control" min="1" max="5" required>
+                        <span class="text-danger" id="error-priority_level"></span>
                     </div>
-                
-                    <div class="form-group">
-                        <label>Estimated Cost (min. 100,000)</label>
-                        <input type="number" name="estimated_cost" class="form-control" min="100000" value="{{ old('estimated_cost') }}">
-                        @error('estimated_cost')
-                            <span class="text-danger">{{ $message }}</span>
-                        @enderror
+                    <!-- Input Estimasi Biaya -->
+                    <div class="mb-3">
+                        <label>Estimated Cost</label>
+                        <input type="number" name="estimated_cost" class="form-control" min="100000" required>
+                        <span class="text-danger" id="error-estimated_cost"></span>
                     </div>
-                
-                    <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Submit</button>
-                    <a href="{{ route('travels') }}" class="btn btn-secondary btn-sm">Cancel</a>
-                </form>
-                
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <!-- Tombol submit form dan tombol close -->
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
-@endsection
+
+<!-- Alert sukses di tengah layar -->
+<div id="globalAlert" class="alert alert-success position-fixed top-50 start-50 translate-middle d-none" role="alert" style="z-index: 1055; min-width: 300px; text-align: center;">
+  <h4 class="alert-heading">Berhasil!</h4>
+  <p>Horayyy, Data yang kamu tambahkan berhasil disimpan.</p>
+  <hr>
+  <p class="mb-0">Wishlist kali ini harus berhasil.</p>
+</div>
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        // Ketika form insert disubmit
+        $('#insertForm').submit(function(e) {
+            e.preventDefault(); // Mencegah reload form
+
+            // AJAX untuk kirim data ke server
+            $.ajax({
+                url: '/travels/store', // URL ke route store travel
+                method: 'POST', // Metode POST
+                data: $(this).serialize(), // Mengirim data form
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // CSRF token untuk keamanan
+                },
+                success: function(response) {
+                    // Sembunyikan modal & tampilkan alert sukses
+                    $('#insertModal').modal('hide');
+                    $('#globalAlert').removeClass('d-none');
+
+                    // Setelah 3 detik, sembunyikan alert dan reload halaman
+                    setTimeout(function() {
+                        $('#globalAlert').addClass('d-none');
+                        location.reload();
+                    }, 3000);
+                },
+                error: function(xhr) {
+                    // Jika error validasi (422), tampilkan pesan error di bawah input
+                    if(xhr.status === 422) {
+                        let errors = xhr.responseJSON.errors;
+                        $('.text-danger').text(''); // Bersihkan semua error lama
+                        for(let key in errors) {
+                            $('#error-' + key).text(errors[key][0]); // Tampilkan error di elemen yang sesuai
+                        }
+                    } else {
+                        alert('Error: ' + xhr.responseText); // Jika error lainnya, tampilkan alert biasa
+                    }
+                }
+            });
+        });
+
+        // Ketika modal ditutup, reset form & error
+        $('#insertModal').on('hidden.bs.modal', function() {
+            $(this).find('form')[0].reset(); // Reset form
+            $('.text-danger').text(''); // Kosongkan error
+        });
+    });
+</script>
+@endpush
