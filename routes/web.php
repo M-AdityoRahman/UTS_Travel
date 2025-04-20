@@ -19,5 +19,10 @@ Route::get('dashboard', function () {
 })->name('dashboard');
 
 Route::controller(TravelController::class)->prefix('travels')->group(function () {
-    Route::get('', 'index')->name('travels'); 
+    Route::get('', 'index')->name('travels');
+    Route::post('store', 'store')->name('travels.store');
+    Route::get('{id}', 'show')->name('travels.show');
+    Route::put('{id}', 'update')->name('travels.update');
+    Route::delete('{id}', 'destroy')->name('travels.destroy');
 });
+
