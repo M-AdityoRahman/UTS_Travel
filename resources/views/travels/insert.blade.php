@@ -39,13 +39,13 @@
                     <!-- Input Prioritas -->
                     <div class="mb-3">
                         <label>Priority Level</label>
-                        <input type="number" name="priority_level" class="form-control" min="1" max="5" required>
+                        <input type="number" name="priority_level" class="form-control" min="1" max="5" placeholder="Minimum 1 Maximum 5" required>
                         <span class="text-danger" id="error-priority_level"></span>
                     </div>
                     <!-- Input Estimasi Biaya -->
                     <div class="mb-3">
                         <label>Estimated Cost</label>
-                        <input type="number" name="estimated_cost" class="form-control" min="100000" required>
+                        <input type="number" name="estimated_cost" class="form-control" min="100000" placeholder="Minimum Rp. 100.000" required>
                         <span class="text-danger" id="error-estimated_cost"></span>
                     </div>
                 </div>
